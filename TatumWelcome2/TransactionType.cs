@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TatumBank.Welcome
+﻿namespace TatumWelcome2
 {
     public enum TransactionType
     {
@@ -12,6 +8,8 @@ namespace TatumBank.Welcome
         AirtimePurchase = 3,
         DataPurchase = 4,
         Deposit = 5,
+
+        Withdrawal = 6
 
     }
 }
