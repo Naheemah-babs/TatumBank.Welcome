@@ -13,6 +13,25 @@ public static class HelperMethods
         return true;
     }
 
+    public static decimal? ReadInitialDeposit()
+    {
+        while (true)
+        {
+            Console.Write("Starting deposit (minimum ₦1,000): ");
+            string input = (Console.ReadLine() ?? "").Trim();
+
+            if (IsCancel(input)) return null;
+
+            if (decimal.TryParse(input, out decimal amount) && amount >= 1000)
+            {
+                return amount;
+            }
+
+            Console.WriteLine("Enter a valid amount of at least ₦1,000.");
+        }
+    }
+
+
     public static decimal? ReadAmount(string prompt, Account? payer = null, decimal minimum = 0m)
     {
         while (true)
@@ -36,13 +55,13 @@ public static class HelperMethods
 
             if (amount < minimum)
             {
-                Console.WriteLine($"Amount must be at least {minimum:N2}.");
+                Console.WriteLine($"Amount must be at least ₦{minimum:N2}.");
                 continue;
             }
 
-            if (payer != null && payer.CheckWithdraw(amount) == WithdrawResult.InsufficientFunds)
+            if (payer != null && payer.CheckWithdraw(amount) == TransactionResult.InsufficientFunds)
             {
-                Console.WriteLine($"You don't have enough balance. Your balance is {payer.Balance:N2}.");
+                Console.WriteLine($"You don't have enough balance. Your balance is ₦{payer.Balance:N2}.");
                 continue;
             }
 
@@ -55,7 +74,7 @@ public static class HelperMethods
         for (int attempt = 0; attempt < 3; attempt++)
         {
             Console.Write(prompt);
-            string input = Console.ReadLine() ?? "";
+            string input = ReadHidden();
 
             if (IsCancel(input)) return false;
 
@@ -69,6 +88,69 @@ public static class HelperMethods
 
         Console.WriteLine("Too many wrong PIN attempts. Operation cancelled.");
         return false;
+    }
+
+    public static string? ReadText(string prompt)
+    {
+        while (true)
+        {
+            Console.Write(prompt);
+            string input = (Console.ReadLine() ?? "").Trim();
+
+            if (IsCancel(input)) return null;
+
+            bool valid = input.Length >= 2 && input.Length <= 50;
+            foreach (char c in input)
+            {
+                if (!char.IsLetter(c) && c != ' ')
+                    valid = false;
+            }
+
+            if (!valid)
+            {
+                Console.WriteLine("Enter a valid name (letters only, 2 to 50 characters).");
+                continue;
+            }
+
+            return input;
+        }
+    }
+
+    public static string? ReadNewPin()
+    {
+        while (true)
+        {
+            Console.Write("Choose a 4-digit PIN: ");
+            string pin = ReadHidden().Trim();
+
+            if (IsCancel(pin)) return null;
+
+            bool valid = pin.Length == 4;
+            foreach (char c in pin)
+            {
+                if (!char.IsDigit(c))
+                    valid = false;
+            }
+
+            if (!valid)
+            {
+                Console.WriteLine("PIN must be exactly 4 digits.");
+                continue;
+            }
+
+            Console.Write("Confirm PIN: ");
+            string confirm = ReadHidden().Trim();
+
+            if (IsCancel(confirm)) return null;
+
+            if (confirm != pin)
+            {
+                Console.WriteLine("PINs don't match. Try again.");
+                continue;
+            }
+
+            return pin;
+        }
     }
 
     public static int ReadChoice(string prompt, int count)
@@ -114,7 +196,7 @@ public static class HelperMethods
         for (int i = 0; i < ServicePlans.DataPlans.Count; i++)
         {
             DataPlan plan = ServicePlans.DataPlans[i];
-            Console.WriteLine($"{i + 1}. {plan.Name} - {plan.Price:N2}");
+            Console.WriteLine($"{i + 1}. {plan.Name} - ₦{plan.Price:N2}");
         }
 
         int choice = ReadChoice("Choose plan: ", ServicePlans.DataPlans.Count);
@@ -167,4 +249,56 @@ public static class HelperMethods
             return cleaned;
         }
     }
+
+    public static bool ProcessPayment(
+    Account account,
+    decimal amount,
+    string description,
+    string successMessage)
+    {
+        TransactionResult result = account.Withdraw(amount, description);
+
+        if (result != TransactionResult.Success)
+        {
+            Console.WriteLine($"Payment failed. {result}");
+            return false;
+        }
+
+        Console.WriteLine($"{successMessage} Balance: ₦{account.Balance:N2}");
+        return true;
+    }
+
+    public static string ReadHidden()
+    {
+        string input = "";
+
+        while (true)
+        {
+            ConsoleKeyInfo key = Console.ReadKey(intercept: true);
+
+            if (key.Key == ConsoleKey.Enter)
+            {
+                Console.WriteLine();
+                return input;
+            }
+
+            if (key.Key == ConsoleKey.Backspace)
+            {
+                if (input.Length > 0)
+                {
+                    input = input.Substring(0, input.Length - 1);
+                    Console.Write("\b \b");
+                }
+                continue;
+            }
+
+            if (!char.IsControl(key.KeyChar))
+            {
+                input += key.KeyChar;
+                Console.Write("*");
+            }
+        }
+    }
+
+
 }

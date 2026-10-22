@@ -14,7 +14,8 @@ public static class AsciiArt
 
                 B  A  N  K
 ==========================================
-      Welcome. Please log in to begin.
+      Welcome to Tatum! What would you like
+              to do today?
 ");
     }
 

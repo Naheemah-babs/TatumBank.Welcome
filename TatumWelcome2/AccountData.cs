@@ -7,7 +7,7 @@ public static class AccountData
         Account nah = new Account
         {
             Name = "Naheemot",
-            Branch = "Lagos",
+            City = "Lagos",
             AccountNumber = "0012345678",
             Pin = "1234"
         };
@@ -15,7 +15,7 @@ public static class AccountData
         Account test = new Account
         {
             Name = "Test User",
-            Branch = "Lagos",
+            City = "Lagos",
             AccountNumber = "0087654321",
             Pin = "4321"
         };
@@ -24,7 +24,7 @@ public static class AccountData
         Account ada = new Account
         {
             Name = "Ada Smith",
-            Branch = "Lagos",
+            City = "Lagos",
             AccountNumber = "0011111111",
             Pin = "1111"
         };
@@ -32,7 +32,7 @@ public static class AccountData
         Account ola = new Account
         {
             Name = "Ola Wale",
-            Branch = "Lagos",
+            City = "Lagos",
             AccountNumber = "0022222222",
             Pin = "2222"
         };
@@ -40,7 +40,7 @@ public static class AccountData
         Account jide = new Account
         {
             Name = "Baba Jide",
-            Branch = "Lagos",
+            City = "Lagos",
             AccountNumber = "0033333333",
             Pin = "3333"
         };
@@ -48,7 +48,7 @@ public static class AccountData
         Account tunde = new Account
         {
             Name = "Baba Tunde",
-            Branch = "Lagos",
+            City = "Lagos",
             AccountNumber = "0044444444",
             Pin = "4444"
         };
