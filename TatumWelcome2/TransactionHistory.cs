@@ -13,14 +13,16 @@ namespace TatumWelcome2
                 Console.WriteLine("No transactions yet.");
                 return;
             }
-            Console.WriteLine($"{"Date",-18}{"Type",-14}{"Amount",12}  Description");
-            Console.WriteLine(new string('-', 60));
+            Console.WriteLine($"{"Date",-18}{"Type",-16}{"Amount",14}  Description");
+            Console.WriteLine(new string('-', 64));
             foreach (Transaction t in account.Transactions)
             {
-                Console.WriteLine($"{t.Date,-18:dd MMM yyyy HH:mm}{t.Type,-14}{t.Amount,12:N2}  {t.Description}");
+                string amountText = "₦" + t.Amount.ToString("N2");
+                Console.WriteLine($"{t.Date,-18:dd MMM yyyy HH:mm}{t.Type,-16}{amountText,14}  {t.Description}");
             }
-            Console.WriteLine(new string('-', 60));
-            Console.WriteLine($"{"Balance",-32}{account.Balance,12:N2}");
+            Console.WriteLine(new string('-', 64));
+            string balanceText = "₦" + account.Balance.ToString("N2");
+            Console.WriteLine($"{"Balance",-34}{balanceText,14}");
         }
     }
     

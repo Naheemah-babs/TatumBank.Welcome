@@ -1,122 +1,90 @@
-﻿using System.Security.Principal;
-
-namespace TatumWelcome2
+﻿namespace TatumWelcome2
 {
     public class Account
     {
         public string Name { get; set; } = string.Empty;
-        public string Branch { get; set; } = string.Empty;
-
+        public string City { get; set; } = string.Empty;
+        public string Phone { get; set; } = string.Empty;
         public string AccountNumber { get; set; } = string.Empty;
         public string Pin { get; set; } = string.Empty;
         public decimal Balance { get; private set; }
         public List<Transaction> Transactions { get; private set; } = new();
 
-        public bool Deposit(decimal amount, string description)
+        public TransactionResult Deposit(decimal amount, string description)
         {
-            if (amount <= 0)
-            {
-                return false;
-            }
-            Balance += amount;
-
-            Transaction userTransaction = new Transaction
-            {
-                Type = TransactionType.Deposit,
-                Amount = amount,
-                Date = DateTime.Now,
-                Description = description
-            };
-
-            Transactions.Add(userTransaction);
-
-            return true;
+            return Credit(amount, description, TransactionType.Deposit);
         }
 
-        public WithdrawResult CheckWithdraw(decimal amount)
+        public TransactionResult TransferIn(decimal amount, string description)
+        {
+            return Credit(amount, description, TransactionType.TransferIn);
+        }
+
+        public TransactionResult CheckWithdraw(decimal amount)
         {
             if (amount <= 0)
             {
-                return WithdrawResult.InvalidAmount;
+                return TransactionResult.InvalidAmount;
             }
 
             if (amount > Balance)
             {
-                return WithdrawResult.InsufficientFunds;
+                return TransactionResult.InsufficientFunds;
             }
 
-            return WithdrawResult.Success;
+            return TransactionResult.Success;
         }
 
-        public WithdrawResult Withdraw(decimal amount, string description)
+        public TransactionResult Withdraw(decimal amount, string description, TransactionType type = TransactionType.Withdrawal)
         {
-            WithdrawResult check = CheckWithdraw(amount);
-
-            if (check != WithdrawResult.Success)
-            {
-                return check;
-            }
-
-            Balance -= amount;
-
-            Transaction userTransaction = new Transaction
-            {
-                Type = TransactionType.Withdrawal,
-                Amount = amount,
-                Date = DateTime.Now,
-                Description = description
-            };
-
-            Transactions.Add(userTransaction);
-
-            return WithdrawResult.Success;
+            return Debit(amount, description, type);
         }
 
-        public WithdrawResult TransferOut(decimal amount, string description)
+        public TransactionResult TransferOut(decimal amount, string description)
         {
-            WithdrawResult check = CheckWithdraw(amount);
-
-            if (check != WithdrawResult.Success)
-            {
-                return check;
-            }
-
-            Balance -= amount;
-
-            Transaction userTransaction = new Transaction
-            {
-                Type = TransactionType.TransferOut,
-                Amount = amount,
-                Date = DateTime.Now,
-                Description = description
-            };
-
-            Transactions.Add(userTransaction);
-
-            return WithdrawResult.Success;
+            return Debit(amount, description, TransactionType.TransferOut);
         }
 
-        public bool TransferIn(decimal amount, string description)
+        private TransactionResult Credit(decimal amount, string description, TransactionType type)
         {
             if (amount <= 0)
             {
-                return false;
+                return TransactionResult.InvalidAmount;
             }
 
             Balance += amount;
 
-            Transaction userTransaction = new Transaction
+            Transactions.Add(new Transaction
             {
-                Type = TransactionType.TransferIn,
+                Type = type,
                 Amount = amount,
                 Date = DateTime.Now,
                 Description = description
-            };
+            });
 
-            Transactions.Add(userTransaction);
+            return TransactionResult.Success;
+        }
 
-            return true;
+        private TransactionResult Debit(decimal amount, string description, TransactionType type)
+        {
+            TransactionResult check = CheckWithdraw(amount);
+
+            if (check != TransactionResult.Success)
+            {
+                return check;
+            }
+
+            Balance -= amount;
+
+            Transactions.Add(new Transaction
+            {
+                Type = type,
+                Amount = amount,
+                Date = DateTime.Now,
+                Description = description
+            });
+
+            return TransactionResult.Success;
         }
     }
-    
 }

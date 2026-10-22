@@ -1,9 +1,10 @@
 ﻿namespace TatumWelcome2;
 
-public enum TransferResult
+public enum TransactionResult
 {
     Success,
     InvalidAmount,
     InsufficientFunds,
-    SameAccount
+    SameAccount,
+    RecipientNotFound
 }
